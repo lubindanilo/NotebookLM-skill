@@ -182,12 +182,12 @@ async def run_generation(job_id: str, request: GenerateRequest):
             # Create notebook
             title = request.notebook_title or "NotebookLM Forge"
             notebook = await client.notebooks.create(title)
-            notebook_id = notebook.notebook_id
+            notebook_id = notebook.id
 
             # Add all sources
             source_tasks = [_add_source(client, notebook_id, s) for s in request.sources]
             sources = await asyncio.gather(*source_tasks)
-            source_ids = [s.source_id for s in sources if s]
+            source_ids = [s.id for s in sources if s]
 
             # Wait for sources to be ready
             if source_ids:
@@ -232,7 +232,7 @@ async def run_generation(job_id: str, request: GenerateRequest):
                 try:
                     jobs.get_job(job_id).progress[ot] = "waiting"
                     await client.artifacts.wait_for_completion(
-                        notebook_id, result.artifact_id
+                        notebook_id, result.task_id
                     )
 
                     jobs.get_job(job_id).progress[ot] = "downloading"
@@ -244,7 +244,7 @@ async def run_generation(job_id: str, request: GenerateRequest):
                     dl_method = getattr(client.artifacts, dl_method_name)
 
                     # Build download kwargs
-                    dl_kwargs = {"output_path": out_path, "artifact_id": result.artifact_id}
+                    dl_kwargs = {"output_path": out_path, "artifact_id": result.task_id}
                     if cfg.output_type == OutputType.SLIDES:
                         dl_kwargs["output_format"] = "pptx"
                     elif cfg.output_type in (OutputType.QUIZ, OutputType.FLASHCARDS):
