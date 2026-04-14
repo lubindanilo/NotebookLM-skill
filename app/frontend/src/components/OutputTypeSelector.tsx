@@ -69,7 +69,7 @@ export default function OutputTypeSelector({ selected, onChange }: Props) {
                   <div key={opt.label}>
                     <label className="text-xs text-gray-500 block mb-1">{opt.label}</label>
                     <select
-                      value={(cfg as Record<string, string | undefined>)[field] || ""}
+                      value={(cfg as unknown as Record<string, string | undefined>)[field] || ""}
                       onChange={(e) => updateOption(ot, field, e.target.value)}
                       className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm"
                     >
