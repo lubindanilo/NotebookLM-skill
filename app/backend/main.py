@@ -17,9 +17,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="NotebookLM Forge", lifespan=lifespan)
 
-allowed_origins = os.getenv(
-    "CORS_ORIGINS", "http://localhost:5173"
-).split(",")
+cors_env = os.getenv("CORS_ORIGINS", "http://localhost:5173")
+allowed_origins = ["*"] if cors_env == "*" else cors_env.split(",")
 
 app.add_middleware(
     CORSMiddleware,
